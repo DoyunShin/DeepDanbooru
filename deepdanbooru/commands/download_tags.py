@@ -11,7 +11,8 @@ def download_category_tags(
 ):
     category_to_index = {"general": 0, "artist": 1, "copyright": 3, "character": 4}
 
-    gold_only_tags = ["loli", "shota", "toddlercon"]
+    #gold_only_tags = ["loli", "shota", "toddlercon"]
+    gold_only_tags = []
 
     if category not in category_to_index:
         raise Exception(f"Not supported category : {category}")
