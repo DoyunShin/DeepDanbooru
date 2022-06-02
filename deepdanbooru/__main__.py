@@ -40,7 +40,7 @@ def download_tags(path, limit, minimum_post_count, overwrite):
 @click.option("--import-size", default=10, help="Thread size for importing to sqlite3.")
 @click.argument(
     "json_path",
-    type=click.Path(exists=True, resolve_path=True, file_okay=True, dir_okay=False),
+    type=click.Path(exists=True, resolve_path=True, file_okay=False, dir_okay=True),
     required=True
 )
 @click.argument(
