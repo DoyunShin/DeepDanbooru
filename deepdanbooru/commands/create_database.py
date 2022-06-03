@@ -2,6 +2,7 @@ import os
 import sqlite3
 from json import loads
 from gc import collect
+import mmap
 
 import deepdanbooru as dd
 
@@ -42,6 +43,7 @@ CREATE TABLE posts (
 
         if use_allmem:
             data = f.read().splitlines()
+            data = mmap.mmap(f.fileno(), 0, prot=mmap.PROT_READ)
         else:
             data = f
         
@@ -67,8 +69,14 @@ CREATE TABLE posts (
                         print(f"{nowfile} :: ERROR: {e}, {(import_size*count)}")
                         exit()
                 insert = []
-
-        f.close()
+        try:
+            f.close()
+        except:
+            pass
+        try:
+            data.close()
+        except:
+            pass
 
         if len(insert) > 0:
             try:
