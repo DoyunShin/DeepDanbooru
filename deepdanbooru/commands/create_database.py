@@ -2,12 +2,11 @@ import os
 import sqlite3
 from json import loads
 from gc import collect
-import mmap
 
 import deepdanbooru as dd
 
 def create_database(
-    project_path, json_path, import_size=10, use_allmem = False, skip_unique = False, use_dbmem = False,
+    project_path, json_path, import_size=10, skip_unique = False, use_dbmem = False, create_new = False
 ):
     """
     Create new database with default parameters.
@@ -21,12 +20,18 @@ def create_database(
         return
 
     # Open Database
-    conn = sqlite3.connect(os.path.join(project_path, "metadata.db"))
-
     if use_dbmem:
-        #conn.enable_load_extension(True)
-        #conn.load_extension(os.path.join(project_path, "lib", "sqlite_mmap"))
-        conn.execute("PRAGMA journal_mode = MEMORY")
+        conn = sqlite3.connect(":memory:")
+        if not create_new:    
+            connsource = sqlite3.connect(os.path.join(project_path, "metadata.db"))
+
+            print("DATABASE DISK --> MEMORY")
+            connsource.backup(conn)
+            print("DATABASE DISK --> MEMORY OK")
+            connsource.close()
+    else:
+        conn = sqlite3.connect(os.path.join(project_path, "metadata.db"))
+        
 
     cursor = conn.cursor()
     try:
@@ -44,24 +49,17 @@ CREATE TABLE posts (
     
     for path in json_path_dir_list:
         nowfile = path.split("\\")[-1]
-        f = open(path, "r", encoding="utf8")
+        f = open(path, "rb")
 
-        if use_allmem: data = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
         
         count = 0
         insert = []
         
-        while True:
-            if use_allmem:
-                i = data.readline()
-            else:
-                i = f.readline()
-            
-            if i == "": break
-            i = loads(i)
+        for data in f:
+            data = loads(data)
 
             try:
-                insert.append((int(i["id"]), i["md5"], i["file_ext"], i["tag_string"], int(i["tag_count_general"])))
+                insert.append((int(data["id"]), data["md5"], data["file_ext"], data["tag_string"], int(data["tag_count_general"])))
             except KeyError:
                 pass
             if len(insert) == import_size:
@@ -77,14 +75,8 @@ CREATE TABLE posts (
                         print(f"{nowfile} :: ERROR: {e}, {(import_size*count)}")
                         exit()
                 insert = []
-        try:
-            f.close()
-        except:
-            pass
-        try:
-            data.close()
-        except:
-            pass
+        
+        f.close()
 
         if len(insert) > 0:
             try:
@@ -101,15 +93,23 @@ CREATE TABLE posts (
         try:
             del(insert)
             del(count)
-            del(data)
             del(f)
         except:
             pass
-        
+
         collect()
     
 
-    
+    if use_dbmem:
+        connsource = sqlite3.connect(os.path.join(project_path, "metadata.db"))
+        
+        print("Database MEMORY --> DISK")
+        conn.backup(connsource)
+        print("Database MEMORY --> DISK OK")
+        
+        connsource.close()
+
     conn.close()
+
 
     
