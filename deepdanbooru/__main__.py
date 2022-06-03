@@ -38,8 +38,8 @@ def download_tags(path, limit, minimum_post_count, overwrite):
 
 @main.command("create-database")
 @click.option("--import-size", default=10, help="Thread size for importing to sqlite3.")
-@click.option("--use-allmem", defulat=False, help="Use all memory for importing to sqlite3.", is_flag=True)
-@click.option("--skip-unique", defulat=False, help="Skip unique tags.", is_flag=True)
+@click.option("--use-allmem", default=False, help="Use all memory for importing to sqlite3.", is_flag=True)
+@click.option("--skip-unique", default=False, help="Skip unique tags.", is_flag=True)
 @click.argument(
     "json_path",
     type=click.Path(exists=True, resolve_path=True, file_okay=False, dir_okay=True),
