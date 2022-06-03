@@ -7,7 +7,7 @@ import mmap
 import deepdanbooru as dd
 
 def create_database(
-    project_path, json_path, import_size=10, use_allmem = False, skip_unique = False, use_databasemem = False,
+    project_path, json_path, import_size=10, use_allmem = False, skip_unique = False, use_dbmem = False,
 ):
     """
     Create new database with default parameters.
@@ -23,7 +23,7 @@ def create_database(
     # Open Database
     conn = sqlite3.connect(os.path.join(project_path, "metadata.db"))
 
-    if use_databasemem:
+    if use_dbmem:
         #conn.enable_load_extension(True)
         #conn.load_extension(os.path.join(project_path, "lib", "sqlite_mmap"))
         conn.execute("PRAGMA journal_mode = MEMORY")
