@@ -41,23 +41,13 @@ CREATE TABLE posts (
         """)
     except sqlite3.OperationalError:
         pass
-
-    if use_allmem:
-        #Check it is Windows
-        if os.name == "nt":
-            prot = mmap.ACCESS_READ
-        else:
-            prot = mmap.PROT_READ
-
-
     
     for path in json_path_dir_list:
         nowfile = path.split("\\")[-1]
         f = open(path, "r", encoding="utf8")
 
         if use_allmem:
-            data = f.read().splitlines()
-            data = mmap.mmap(f.fileno(), 0, prot=prot)
+            data = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
         else:
             data = f
         
