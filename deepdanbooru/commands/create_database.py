@@ -7,7 +7,7 @@ import mmap
 import deepdanbooru as dd
 
 def create_database(
-    project_path, json_path, import_size=10, use_allmem = False, skip_unique = False,
+    project_path, json_path, import_size=10, use_allmem = False, skip_unique = False, use_databasemem = False,
 ):
     """
     Create new database with default parameters.
@@ -22,6 +22,12 @@ def create_database(
 
     # Open Database
     conn = sqlite3.connect(os.path.join(project_path, "metadata.db"))
+
+    if use_databasemem:
+        #conn.enable_load_extension(True)
+        #conn.load_extension(os.path.join(project_path, "lib", "sqlite_mmap"))
+        conn.execute("PRAGMA journal_mode = MEMORY")
+
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -36,6 +42,14 @@ CREATE TABLE posts (
     except sqlite3.OperationalError:
         pass
 
+    if use_allmem:
+        #Check it is Windows
+        if os.name == "nt":
+            prot = mmap.ACCESS_READ
+        else:
+            prot = mmap.PROT_READ
+
+
     
     for path in json_path_dir_list:
         nowfile = path.split("\\")[-1]
@@ -43,7 +57,7 @@ CREATE TABLE posts (
 
         if use_allmem:
             data = f.read().splitlines()
-            data = mmap.mmap(f.fileno(), 0, prot=mmap.PROT_READ)
+            data = mmap.mmap(f.fileno(), 0, prot=prot)
         else:
             data = f
         
