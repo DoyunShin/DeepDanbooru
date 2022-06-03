@@ -46,18 +46,22 @@ CREATE TABLE posts (
         nowfile = path.split("\\")[-1]
         f = open(path, "r", encoding="utf8")
 
-        if use_allmem:
-            data = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
-        else:
-            data = f
+        if use_allmem: data = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
         
         count = 0
         insert = []
         
-        for i in data:
-            data = loads(i)
+        while True:
+            if use_allmem:
+                i = data.readline()
+            else:
+                i = f.readline()
+            
+            if i == "": break
+            i = loads(i)
+
             try:
-                insert.append((int(data["id"]), data["md5"], data["file_ext"], data["tag_string"], int(data["tag_count_general"])))
+                insert.append((int(i["id"]), i["md5"], i["file_ext"], i["tag_string"], int(i["tag_count_general"])))
             except KeyError:
                 pass
             if len(insert) == import_size:
