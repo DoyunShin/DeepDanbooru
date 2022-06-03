@@ -38,6 +38,8 @@ def download_tags(path, limit, minimum_post_count, overwrite):
 
 @main.command("create-database")
 @click.option("--import-size", default=10, help="Thread size for importing to sqlite3.")
+@click.option("--use-allmem", defulat=False, help="Use all memory for importing to sqlite3.", is_flag=True)
+@click.option("--skip-unique", defulat=False, help="Skip unique tags.", is_flag=True)
 @click.argument(
     "json_path",
     type=click.Path(exists=True, resolve_path=True, file_okay=False, dir_okay=True),
@@ -47,8 +49,8 @@ def download_tags(path, limit, minimum_post_count, overwrite):
     "project_path",
     type=click.Path(exists=True, resolve_path=True, file_okay=False, dir_okay=True),
 )
-def create_database(project_path, json_path, import_size):
-    dd.commands.create_database(project_path, json_path, import_size)
+def create_database(project_path, json_path, import_size, use_allmem, skip_unique):
+    dd.commands.create_database(project_path, json_path, import_size, use_allmem, skip_unique)
 
 @main.command("make-training-database")
 @click.argument(
