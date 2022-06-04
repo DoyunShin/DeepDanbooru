@@ -38,7 +38,7 @@ def create_database(
         if insert_all:
             insert_sql = """INSERT INTO posts (id, md5, tag_string, tag_count, tag_string_general, tag_count_general, tag_string_artist, tag_count_artist, tag_string_character, tag_count_character, tag_string_copyright, tag_count_copyright, tag_string_meta, tag_count_meta, rating, score, is_deleted, is_banned, fav_count, file_ext, uploader_id, created_at, updated_at, image_width, image_height, has_children, has_active_children, has_visible_children, file_url, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
-CREATE TABLE posts(
+CREATE TABLE posts (
     id INTEGER PRIMARY KEY,
     md5 TEXT,
     tag_string TEXT,
@@ -68,7 +68,7 @@ CREATE TABLE posts(
     has_active_children INTEGER,
     has_visible_children INTEGER,
     file_url TEXT,
-    source TEXT,
+    source TEXT
 )
             """)
         else:
@@ -83,7 +83,7 @@ CREATE TABLE posts(
     rating TEXT,
     score INTEGER,
     is_deleted INTEGER,
-    is_banned INTEGER,
+    is_banned INTEGER
 )
             """)
     except sqlite3.OperationalError:
