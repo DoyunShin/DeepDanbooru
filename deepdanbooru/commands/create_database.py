@@ -36,6 +36,7 @@ def create_database(
     cursor = conn.cursor()
     try:
         if insert_all:
+            insert_sql = """INSERT INTO posts (id, md5, tag_string, tag_count, tag_string_general, tag_count_general, tag_string_artist, tag_count_artist, tag_string_character, tag_count_character, tag_string_copyright, tag_count_copyright, tag_string_meta, tag_count_meta, rating, score, is_deleted, is_banned, fav_count, file_ext, uploader_id, created_at, updated_at, image_width, image_height, has_children, has_active_children, has_visible_children, file_url, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
 CREATE TABLE posts(
     id INTEGER PRIMARY KEY,
@@ -71,6 +72,7 @@ CREATE TABLE posts(
 )
             """)
         else:
+            insert_sql = """INSERT INTO posts (id, md5, file_ext, tag_string, tag_count_general, rating, score, is_deleted, is_banned) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
 CREATE TABLE posts(
     id INTEGER PRIMARY KEY,
@@ -107,8 +109,7 @@ CREATE TABLE posts(
                 pass
             if len(insert) == import_size:
                 try:
-                    if insert_all: cursor.executemany("""INSERT (id, md5, tag_string, tag_count, tag_string_general, tag_count_general, tag_string_artist, tag_count_artist, tag_string_character, tag_count_character, tag_string_copyright, tag_count_copyright, tag_string_meta, tag_count_meta, rating, score, is_deleted, is_banned, fav_count, file_ext, uploader_id, created_at, updated_at, image_width, image_height, has_children, has_active_children, has_visible_children, file_url, source) INTO posts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert)
-                    else: cursor.executemany("""INSERT (id, md5, file_ext, tag_string, tag_count_general, rating, score, is_deleted, is_banned) INTO posts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert)
+                    cursor.executemany(insert_sql, insert)
                     insert = []
                     conn.commit()
                     print(f"{nowfile} :: {len(insert)} rows imported. {(len(insert) + import_size*count)}")
@@ -125,8 +126,7 @@ CREATE TABLE posts(
 
         if len(insert) > 0:
             try:
-                if insert_all: cursor.executemany("""INSERT (id, md5, tag_string, tag_count, tag_string_general, tag_count_general, tag_string_artist, tag_count_artist, tag_string_character, tag_count_character, tag_string_copyright, tag_count_copyright, tag_string_meta, tag_count_meta, rating, score, is_deleted, is_banned, fav_count, file_ext, uploader_id, created_at, updated_at, image_width, image_height, has_children, has_active_children, has_visible_children, file_url, source) INTO posts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert)
-                else: cursor.executemany("""INSERT (id, md5, file_ext, tag_string, tag_count_general, rating, score, is_deleted, is_banned) INTO posts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert)
+                cursor.executemany(insert_sql, insert)
                 conn.commit()
                 print(f"{nowfile} :: {len(insert)} rows imported. {(len(insert) + import_size*count)}")
             except sqlite3.IntegrityError as e:
