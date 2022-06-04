@@ -36,7 +36,7 @@ def create_database(
     cursor = conn.cursor()
     try:
         if insert_all:
-            insert_sql = """INSERT (id, md5, tag_string, tag_count, tag_string_general, tag_count_general, tag_string_artist, tag_count_artist, tag_string_character, tag_count_character, tag_string_copyright, tag_count_copyright, tag_string_meta, tag_count_meta, rating, score, is_deleted, is_banned, fav_count, file_ext, uploader_id, created_at, updated_at, image_width, image_height, has_children, has_active_children, has_visible_children, file_url, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+            insert_sql = """INSERT (id, md5, tag_string, tag_count, tag_string_general, tag_count_general, tag_string_artist, tag_count_artist, tag_string_character, tag_count_character, tag_string_copyright, tag_count_copyright, tag_string_meta, tag_count_meta, rating, score, is_deleted, is_banned, fav_count, file_ext, uploader_id, created_at, updated_at, image_width, image_height, has_children, has_active_children, has_visible_children, file_url, source) INTO posts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
 CREATE TABLE posts(
     id INTEGER PRIMARY KEY,
@@ -73,7 +73,7 @@ CREATE TABLE posts(
             """)
             
         else:
-            insert_sql = """INSERT (id, md5, file_ext, tag_string, tag_count_general, rating, score, is_deleted, is_banned) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+            insert_sql = """INSERT (id, md5, file_ext, tag_string, tag_count_general, rating, score, is_deleted, is_banned) INTO posts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
 CREATE TABLE posts(
     id INTEGER PRIMARY KEY,
@@ -112,7 +112,6 @@ CREATE TABLE posts(
                 try:
                     cursor.executemany(insert_sql, insert)
                     insert = []
-                    #cursor.executemany("INSERT (id, md5, file_ext, tag_string, tag_count_general, rating, score, is_deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", insert)
                     conn.commit()
                     print(f"{nowfile} :: {len(insert)} rows imported. {(len(insert) + import_size*count)}")
                     count += 1
