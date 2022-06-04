@@ -104,7 +104,6 @@ CREATE TABLE posts(
                     insert.append((int(data["id"]), data["md5"], data["tag_string"], int(data["tag_count"]), data["tag_string_general"], int(data["tag_count_general"]), data["tag_string_artist"], int(data["tag_count_artist"]), data["tag_string_character"], int(data["tag_count_character"]), data["tag_string_copyright"], int(data["tag_count_copyright"]), data["tag_string_meta"], int(data["tag_count_meta"]), data["rating"], int(data["score"]), int(data["is_deleted"]), int(data["is_banned"]), int(data["fav_count"]), data["file_ext"], int(data["uploader_id"]), data["created_at"], data["updated_at"], int(data["image_width"]), int(data["image_height"]), int(data["has_children"]), int(data["has_active_children"]), int(data["has_visible_children"]), data["file_url"], data["source"]))
                 else:
                     insert.append((int(data["id"]), data["md5"], data["file_ext"], data["tag_string"], int(data["tag_count_general"]), data["rating"], int(data["score"]), int(data["is_deleted"]), int(data["is_banned"])))
-                count += 1
             except KeyError:
                 pass
             if len(insert) == import_size:
