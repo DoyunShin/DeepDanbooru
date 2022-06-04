@@ -110,7 +110,6 @@ CREATE TABLE posts(
             if len(insert) == import_size:
                 try:
                     cursor.executemany(insert_sql, insert)
-                    insert = []
                     conn.commit()
                     print(f"{nowfile} :: {len(insert)} rows imported. {(len(insert) + import_size*count)}")
                     count += 1
