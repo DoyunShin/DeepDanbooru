@@ -40,16 +40,20 @@ To install it with tensorflow, add `tensorflow` extra package.
 ```
 > deepdanbooru download-tags [your_project_folder]
 ```
-4. (Option) Filtering dataset. If you want to train with optional tags (rating and score), you should convert it as system tags.
+4. (Option) Creating database from dataset. If you downloaded jsonfile from rsync, you can use this command
+```
+> deepdanbooru create-databse [your_dataset_json_path] [your_projet_folder]
+```
+5. (Option) Filtering dataset. If you want to train with optional tags (rating and score), you should convert it as system tags.
 ```
 > deepdanbooru make-training-database [your_dataset_sqlite_path] [your_filtered_sqlite_path]
 ```
-5. Modify `project.json` in the project folder. You should change `database_path` setting to your actual sqlite file path.
-6. Start training.
+6. Modify `project.json` in the project folder. You should change `database_path` setting to your actual sqlite file path.
+7. Start training.
 ```
 > deepdanbooru train-project [your_project_folder]
 ```
-7. Enjoy it.
+8. Enjoy it.
 ```
 > deepdanbooru evaluate [image_file_path or folder]... --project-path [your_project_folder] --allow-folder
 ```
