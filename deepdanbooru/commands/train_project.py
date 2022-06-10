@@ -9,7 +9,7 @@ import tensorflow as tf
 import deepdanbooru as dd
 
 
-def export_model_as_float32(temporary_model, checkpoint_path, export_path):
+def export_model_as_float32(temporary_model, checkpoint_path, export_path, no_md5_folder):
     """
     Hotfix for exporting mixed precision model as float32.
     """
@@ -24,7 +24,7 @@ def export_model_as_float32(temporary_model, checkpoint_path, export_path):
     temporary_model.save(export_path, include_optimizer=False)
 
 
-def train_project(project_path, source_model):
+def train_project(project_path, source_model, load_as_md5=False, use_dbmem=False):
     project_context_path = os.path.join(project_path, "project.json")
     project_context = dd.io.deserialize_from_json(project_context_path)
 
@@ -155,7 +155,7 @@ def train_project(project_path, source_model):
     )
 
     print(f"Loading database ... ")
-    image_records = dd.data.load_image_records(database_path, minimum_tag_count)
+    image_records = dd.data.load_image_records(database_path, minimum_tag_count, load_as_md5, use_dbmem, no_md5_folder)
 
     # Checkpoint variables
     used_epoch = tf.Variable(0, dtype=tf.int64)
