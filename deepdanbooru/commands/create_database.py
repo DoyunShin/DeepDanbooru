@@ -23,13 +23,16 @@ def create_database(
     if use_dbmem:
         print("Creating new database in memory...")
         conn = sqlite3.connect(":memory:")
-        if not create_new:    
-            connsource = sqlite3.connect(os.path.join(project_path, "metadata.db"))
+        if not create_new:
+            if os.path.exists(os.path.join(project_context_path, "metadata.db")):                    
+                connsource = sqlite3.connect(os.path.join(project_path, "metadata.db"))
 
-            print("DATABASE DISK --> MEMORY")
-            connsource.backup(conn)
-            print("DATABASE DISK --> MEMORY OK")
-            connsource.close()
+                print("DATABASE DISK --> MEMORY")
+                connsource.backup(conn)
+                print("DATABASE DISK --> MEMORY OK")
+                connsource.close()
+            else:
+                print("WARNING: No database found. Creating new database.")
     else:
         conn = sqlite3.connect(os.path.join(project_path, "metadata.db"))
         
