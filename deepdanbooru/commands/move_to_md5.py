@@ -4,11 +4,11 @@ from hashlib import md5
 
 import deepdanbooru as dd
 
-def move_to_md5(image_path, destination_path):
+def move_to_md5(source_path, destination_path):
     """
     Move image to md5 name.
     """
-    image_dir = Path(image_path)
+    image_dir = Path(source_path)
     destination_dir = Path(destination_path)
     if not image_dir.exists():
         raise FileNotFoundError(f"{image_dir} does not exist.")
