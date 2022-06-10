@@ -21,6 +21,7 @@ def create_database(
 
     # Open Database
     if use_dbmem:
+        print("Creating new database in memory...")
         conn = sqlite3.connect(":memory:")
         if not create_new:    
             connsource = sqlite3.connect(os.path.join(project_path, "metadata.db"))
