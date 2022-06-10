@@ -9,7 +9,7 @@ import tensorflow as tf
 import deepdanbooru as dd
 
 
-def export_model_as_float32(temporary_model, checkpoint_path, export_path, no_md5_folder):
+def export_model_as_float32(temporary_model, checkpoint_path, export_path):
     """
     Hotfix for exporting mixed precision model as float32.
     """
@@ -24,7 +24,7 @@ def export_model_as_float32(temporary_model, checkpoint_path, export_path, no_md
     temporary_model.save(export_path, include_optimizer=False)
 
 
-def train_project(project_path, source_model, load_as_md5=False, use_dbmem=False):
+def train_project(project_path, source_model, load_as_md5=False, use_dbmem=False, no_md5_folder=False):
     project_context_path = os.path.join(project_path, "project.json")
     project_context = dd.io.deserialize_from_json(project_context_path)
 
