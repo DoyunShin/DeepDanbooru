@@ -21,7 +21,7 @@ def move_to_md5(source_path, destination_path):
             try:
                 image_file.rename(image_file_md5_path)
             except FileExistsError:
-                print(f"{image_file_md5_path} already exists!!")
+                print(f"ERROR: {image_file_md5_path} -> {image_file_md5_path} already exists!!")
                 f = open("duplicate_files.txt", "a")
                 f.write(f"{image_file} -> {image_file_md5_path}\n")
                 f.close()
