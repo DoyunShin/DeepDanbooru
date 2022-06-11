@@ -18,7 +18,13 @@ def move_to_md5(source_path, destination_path):
         if image_file.is_file():
             image_file_md5 = str(md5(image_file.read_bytes()).hexdigest())+image_file.suffix
             image_file_md5_path = destination_dir / image_file_md5
-            image_file.rename(image_file_md5_path)
+            try:
+                image_file.rename(image_file_md5_path)
+            except FileExistsError:
+                print(f"{image_file_md5_path} already exists!!")
+                f = open("duplicate_files.txt", "a")
+                f.write(f"{image_file} -> {image_file_md5_path}\n")
+                f.close()
             print(f"{image_file} -> {image_file_md5_path}")
             collect()
 
