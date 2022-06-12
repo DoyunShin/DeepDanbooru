@@ -25,7 +25,7 @@ def move_to_md5(source_path, destination_path, use_threads=False, threads=5):
                 while True:
                     if len(thread) < threads:
                         thread.update({str(image_file): Thread(target=move_to_md5_thread, args=(image_file, destination_dir))})
-                        thread[image_file].start()
+                        thread[str(image_file)].start()
                         break
                     else:
                         sleep(0.1)
