@@ -103,6 +103,8 @@ def make_training_database(
     )
 
 @main.command("move-to-md5")
+@click.option("--use-threads", help="Use threads.", is_flag=True)
+@click.option("--threads", default=5, help="Threads count.")
 @click.argument(
     "source_path",
     type=click.Path(exists=True, resolve_path=True, file_okay=False, dir_okay=True),
@@ -111,8 +113,8 @@ def make_training_database(
     "destination_path",
     type=click.Path(exists=False, resolve_path=True, file_okay=False, dir_okay=True),
 )
-def move_to_md5(source_path, destination_path):
-    dd.commands.move_to_md5(source_path, destination_path)
+def move_to_md5(source_path, destination_path ,use_threads, threads):
+    dd.commands.move_to_md5(source_path, destination_path, use_threads, threads)
 
 @main.command("train-project")
 @click.option("--use-dbmem", default=False, help="Use database memory for importing to sqlite3.", is_flag=True)
