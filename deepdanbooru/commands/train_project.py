@@ -26,9 +26,13 @@ def export_model_as_float32(temporary_model, checkpoint_path, export_path):
 
 def train_project(project_path, source_model, load_as_md5=False, use_dbmem=False, no_md5_folder=False):
     try:
-        tf.config.experimental.set_memory_growth(tf.config.list_physical_devices('GPU')[0], True)
+        gpus = tf.config.experimental.list_physical_devices('GPU')
+        if gpus:
+            tf.config.experimental.set_memory_growth(gpus[0], True)
+            tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=8192)])
     except:
         pass
+
     project_context_path = os.path.join(project_path, "project.json")
     project_context = dd.io.deserialize_from_json(project_context_path)
 
