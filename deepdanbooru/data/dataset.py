@@ -26,23 +26,27 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
     cursor = connection.cursor()
 
     image_folder_path = os.path.join(os.path.dirname(sqlite_path), "images")
-
+    
     if load_as_md5:
-        data = []
+        rows = []
         for filename in os.listdir(image_folder_path):
             if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".jpeg"):
-                data.append((filename.split(".")[0], minimum_tag_count))
-        cursor.executemany(
-            "SELECT md5, file_ext, tag_string FROM posts WHERE (md5 = ?) AND (tag_count_general >= ?)",
-            data
-        )
+                cursor.execute(
+                    "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (md5 = {md5}) AND (tag_count_general >= {count})".format(md5=filename.split(".")[0], count=minimum_tag_count)
+                )
+                data.append(cursor.fetchone())
+        #        data.append((filename.split(".")[0], minimum_tag_count))
+        #cursor.executemany(
+        #    "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (md5 = ?) AND (tag_count_general >= ?)",
+        #    data
+        #)
     else:
         cursor.execute(
             "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (tag_count_general >= ?) ORDER BY id",
             (minimum_tag_count,),
         )
 
-    rows = cursor.fetchall()
+        rows = cursor.fetchall()
 
     image_records = []
 
