@@ -31,7 +31,7 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
             if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".jpeg"):
                 data.append((filename.split(".")[0], minimum_tag_count))
         cursor.execute(
-            "SELECT md5, file_ext, tag_string FROM images WHERE (md5 = ?) AND (tag_count_general >= ?)",
+            "SELECT md5, file_ext, tag_string FROM posts WHERE (md5 = ?) AND (tag_count_general >= ?)",
             data
         )
     else:
