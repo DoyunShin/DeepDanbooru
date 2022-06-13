@@ -54,15 +54,18 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
 
 
     for row in rows:
-        md5 = row["md5"]
-        extension = row["file_ext"]
-        if no_md5_folder:
-            image_path = os.path.join(image_folder_path, f"{md5}.{extension}")
-        else:
-            image_path = os.path.join(image_folder_path, md5[0:2], f"{md5}.{extension}")
-        tag_string = row["tag_string"]
+        try:
+            md5 = row["md5"]
+            extension = row["file_ext"]
+            if no_md5_folder:
+                image_path = os.path.join(image_folder_path, f"{md5}.{extension}")
+            else:
+                image_path = os.path.join(image_folder_path, md5[0:2], f"{md5}.{extension}")
+            tag_string = row["tag_string"]
 
-        image_records.append((image_path, tag_string))
+            image_records.append((image_path, tag_string))
+        except:
+            print(f"Error: {row}")
 
     connection.close()
     del(connection)
