@@ -44,7 +44,7 @@ def create_database(
             cursor.execute("""
 CREATE TABLE posts (
     id INTEGER PRIMARY KEY,
-    md5 TEXT,
+    md5 TEXT PRIMARY KEY,
     tag_string TEXT,
     tag_count INTEGER,
     tag_string_general TEXT,
@@ -80,7 +80,7 @@ CREATE TABLE posts (
             cursor.execute("""
 CREATE TABLE posts(
     id INTEGER PRIMARY KEY,
-    md5 TEXT,
+    md5 TEXT PRIMARY KEY,
     file_ext TEXT,
     tag_string TEXT,
     tag_count_general INTEGER,
