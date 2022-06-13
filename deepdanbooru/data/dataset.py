@@ -34,7 +34,7 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
                 cursor.execute(
                     "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (md5 = '{md5}') AND (tag_count_general >= {count})".format(md5=filename.split(".")[0], count=minimum_tag_count)
                 )
-                data.append(cursor.fetchone())
+                rows.append(cursor.fetchone())
         #        data.append((filename.split(".")[0], minimum_tag_count))
         #cursor.executemany(
         #    "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (md5 = ?) AND (tag_count_general >= ?)",
