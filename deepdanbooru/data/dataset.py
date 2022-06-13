@@ -52,7 +52,6 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
 
     print("Loaded all database records.")
 
-
     for row in rows:
         try:
             md5 = row["md5"]
@@ -68,8 +67,9 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
             print(f"Error: {row}")
 
     connection.close()
+    print(f"Loaded {len(image_records)}/{len(rows)} images.")
     del(connection)
-    del(data)
+    del(rows)
     collect()
 
     return image_records
