@@ -43,7 +43,7 @@ def create_database(
             insert_sql = """INSERT INTO posts (id, md5, tag_string, tag_count, tag_string_general, tag_count_general, tag_string_artist, tag_count_artist, tag_string_character, tag_count_character, tag_string_copyright, tag_count_copyright, tag_string_meta, tag_count_meta, rating, score, is_deleted, is_banned, fav_count, file_ext, uploader_id, created_at, updated_at, image_width, image_height, has_children, has_active_children, has_visible_children, file_url, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
 CREATE TABLE posts (
-    id INTEGER PRIMARY KEY,
+    id INTEGER,
     md5 TEXT PRIMARY KEY,
     tag_string TEXT,
     tag_count INTEGER,
@@ -79,7 +79,7 @@ CREATE TABLE posts (
             insert_sql = """INSERT INTO posts (id, md5, file_ext, tag_string, tag_count_general, rating, score, is_deleted, is_banned) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
 CREATE TABLE posts(
-    id INTEGER PRIMARY KEY,
+    id INTEGER,
     md5 TEXT PRIMARY KEY,
     file_ext TEXT,
     tag_string TEXT,
@@ -93,6 +93,9 @@ CREATE TABLE posts(
     except sqlite3.OperationalError:
         pass
     
+    cursor.execute("""
+CREATE UNIQUE INDEX posts_idx ON posts (md5)
+    """)
     for path in json_path_dir_list:
         nowfile = path.split("\\")[-1]
         f = open(path, "rb")
