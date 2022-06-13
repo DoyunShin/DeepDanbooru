@@ -50,6 +50,9 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
 
     image_records = []
 
+    print("Loaded all database records.")
+    
+
     for row in rows:
         md5 = row["md5"]
         extension = row["file_ext"]
