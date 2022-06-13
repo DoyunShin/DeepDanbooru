@@ -32,7 +32,7 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
         for filename in os.listdir(image_folder_path):
             if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".jpeg"):
                 cursor.execute(
-                    "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (md5 = {md5}) AND (tag_count_general >= {count})".format(md5=filename.split(".")[0], count=minimum_tag_count)
+                    "SELECT md5, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (md5 = '{md5}') AND (tag_count_general >= {count})".format(md5=filename.split(".")[0], count=minimum_tag_count)
                 )
                 data.append(cursor.fetchone())
         #        data.append((filename.split(".")[0], minimum_tag_count))
@@ -51,7 +51,7 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
     image_records = []
 
     print("Loaded all database records.")
-    
+
 
     for row in rows:
         md5 = row["md5"]
