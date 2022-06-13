@@ -16,7 +16,9 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
         connection = sqlite3.connect(":memory:")
 
         connection_disk = sqlite3.connect(sqlite_path)
+        print("DATABASE DISK --> MEMORY")
         connection_disk.backup(connection)
+        print("DATABASE DISK --> MEMORY OK")
         connection_disk.close()
     else:
         connection = sqlite3.connect(sqlite_path)
@@ -30,7 +32,7 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
         for filename in os.listdir(image_folder_path):
             if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".jpeg"):
                 data.append((filename.split(".")[0], minimum_tag_count))
-        cursor.execute(
+        cursor.executemany(
             "SELECT md5, file_ext, tag_string FROM posts WHERE (md5 = ?) AND (tag_count_general >= ?)",
             data
         )
