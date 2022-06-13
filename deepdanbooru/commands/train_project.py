@@ -24,12 +24,12 @@ def export_model_as_float32(temporary_model, checkpoint_path, export_path):
     temporary_model.save(export_path, include_optimizer=False)
 
 
-def train_project(project_path, source_model, load_as_md5=False, use_dbmem=False, no_md5_folder=False):
+def train_project(project_path, source_model, load_as_md5=False, use_dbmem=False, no_md5_folder=False, gpu_memory_limit=4096):
     try:
         gpus = tf.config.experimental.list_physical_devices('GPU')
         if gpus:
-            tf.config.experimental.set_memory_growth(gpus[0], True)
-            tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=8192)])
+            #tf.config.experimental.set_memory_growth(gpus[0], True)
+            tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=gpu_memory_limit)])
     except:
         pass
 
