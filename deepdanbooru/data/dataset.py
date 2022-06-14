@@ -29,6 +29,7 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
     image_folder_path = os.path.join(os.path.dirname(sqlite_path), "images")
     
     typ = ""
+    paths = []
 
     if load_as_md5:
         typ = "md5"
@@ -47,10 +48,12 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
     elif load_as_id:
         typ = "id"
         rows = []
+        
         for filename in Path(image_folder_path).glob("**/*"):
             if filename.is_file():
                 #check endwith
                 if filename.suffix == ".jpg" or filename.suffix == ".png" or filename.suffix == ".jpeg":
+                    paths.append(filename.stem)
                     cursor.execute(
                         "SELECT id, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (id = ?) AND (tag_count_general >= ?)",
                         (filename.stem, minimum_tag_count)
@@ -69,7 +72,7 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
     image_records = []
 
     print("Loaded all database records.")
-
+    count = 0
     for row in rows:
         try:
             check = row[typ]
@@ -87,7 +90,12 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
 
             image_records.append((image_path, tag_string))
         except:
-            print(f"Error: {row}")
+            if paths == []:
+                print("Error in row:", row)
+            else:
+                print("Error in row:", row, "with path:", paths[count])
+        
+        count += 1
 
     connection.close()
     print(f"Loaded {len(image_records)}/{len(rows)} images.")
