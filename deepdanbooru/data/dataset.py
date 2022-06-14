@@ -52,7 +52,8 @@ def load_image_records(sqlite_path, minimum_tag_count, use_dbmem, load_as_md5, n
                 #check endwith
                 if filename.suffix == ".jpg" or filename.suffix == ".png" or filename.suffix == ".jpeg":
                     cursor.execute(
-                        "SELECT id, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (id = ?) AND (tag_count_general >= {count})".format(id=int(filename.name), count=minimum_tag_count)
+                        "SELECT id, file_ext, tag_string FROM posts WHERE (file_ext = 'png' OR file_ext = 'jpg' OR file_ext = 'jpeg') AND (id = ?) AND (tag_count_general >= ?)",
+                        (filename.stem, minimum_tag_count)
                     )
                     rows.append(cursor.fetchone())
         pass
