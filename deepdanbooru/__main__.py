@@ -120,6 +120,8 @@ def move_to_md5(source_path, destination_path ,use_threads, threads):
 @click.option("--use-dbmem", default=False, help="Use database memory for importing to sqlite3.", is_flag=True)
 @click.option("--load-as-md5", default=False, help="Load as md5.", is_flag=True)
 @click.option("--no-md5-folder", default=False, help="Do not use md5 2 word folder.", is_flag=True)
+@click.option("--load-as-id", default=False, help="Load as id.", is_flag=True)
+@click.option("--use-one-folder", default=False, help="Load as one id folder.", is_flag=True)
 @click.argument(
     "project_path",
     type=click.Path(exists=True, resolve_path=True, file_okay=False, dir_okay=True),
@@ -132,9 +134,8 @@ def move_to_md5(source_path, destination_path ,use_threads, threads):
     "--gpu-memory-limit",
     default=4096, help="GPU memory limit for training.", type=click.INT
 )
-
-def train_project(project_path, source_model, use_dbmem, load_as_md5, no_md5_folder, gpu_memory_limit):
-    dd.commands.train_project(project_path, source_model, use_dbmem, load_as_md5, no_md5_folder, gpu_memory_limit)
+def train_project(project_path, source_model, use_dbmem, load_as_md5, no_md5_folder, gpu_memory_limit, load_as_id, use_one_folder):
+    dd.commands.train_project(project_path, source_model, use_dbmem, load_as_md5, no_md5_folder, gpu_memory_limit, load_as_id, use_one_folder)
 
 
 @main.command(
