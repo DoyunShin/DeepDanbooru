@@ -132,7 +132,7 @@ def move_to_md5(source_path, destination_path ,use_threads, threads):
 )
 @click.option(
     "--gpu-memory-limit",
-    default=4096, help="GPU memory limit for training.", type=click.INT
+    default=0, help="GPU memory limit for training.", type=click.INT
 )
 def train_project(project_path, source_model, use_dbmem, load_as_md5, no_md5_folder, gpu_memory_limit, load_as_id, use_one_folder):
     dd.commands.train_project(project_path, source_model, use_dbmem, load_as_md5, no_md5_folder, gpu_memory_limit, load_as_id, use_one_folder)
