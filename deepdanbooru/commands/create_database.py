@@ -43,8 +43,8 @@ def create_database(
             insert_sql = """INSERT INTO posts (id, md5, tag_string, tag_count, tag_string_general, tag_count_general, tag_string_artist, tag_count_artist, tag_string_character, tag_count_character, tag_string_copyright, tag_count_copyright, tag_string_meta, tag_count_meta, rating, score, is_deleted, is_banned, fav_count, file_ext, uploader_id, created_at, updated_at, image_width, image_height, has_children, has_active_children, has_visible_children, file_url, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
 CREATE TABLE posts (
-    id INTEGER,
-    md5 TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
+    md5 TEXT,
     tag_string TEXT,
     tag_count INTEGER,
     tag_string_general TEXT,
@@ -79,8 +79,8 @@ CREATE TABLE posts (
             insert_sql = """INSERT INTO posts (id, md5, file_ext, tag_string, tag_count_general, rating, score, is_deleted, is_banned) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute("""
 CREATE TABLE posts(
-    id INTEGER,
-    md5 TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
+    md5 TEXT,
     file_ext TEXT,
     tag_string TEXT,
     tag_count_general INTEGER,
@@ -94,7 +94,7 @@ CREATE TABLE posts(
         pass
     
     cursor.execute("""
-CREATE UNIQUE INDEX posts_idx ON posts (md5)
+CREATE UNIQUE INDEX posts_idx ON posts (id)
     """)
     for path in json_path_dir_list:
         nowfile = path.split("\\")[-1]
