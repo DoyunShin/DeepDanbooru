@@ -5,8 +5,9 @@
 
 
 ## Requirements
-DeepDanbooru is written by Python 3.6. Following packages are need to be installed.
-- tensorflow>=2.3.1
+DeepDanbooru is written by Python 3.7. Following packages are need to be installed.
+- tensorflow>=2.7.0
+- tensorflow-io>=2.22.0
 - Click>=7.0
 - numpy>=1.16.2
 - requests>=2.22.0
