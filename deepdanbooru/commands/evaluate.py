@@ -24,9 +24,16 @@ def evaluate_image(
     for i, tag in enumerate(tags):
         result_dict[tag] = y[i]
 
+    sort = {}
+
     for tag in tags:
         if result_dict[tag] >= threshold:
-            yield tag, result_dict[tag]
+            sort.update({tag: result_dict[tag]})
+            #yield tag, result_dict[tag]
+    
+    sort = sorted(sort.items(), key=lambda x: x[1], reverse=True)
+    for tag, score in sort:
+        yield tag, score
 
 
 def evaluate(
