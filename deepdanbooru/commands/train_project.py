@@ -83,85 +83,90 @@ def train_project(project_path, source_model, load_as_md5=False, use_dbmem=False
     # tf.keras.mixed_precision.experimental.set_policy('infer_float32_vars')
     # tf.config.gpu.set_per_process_memory_growth(True)
 
-    if optimizer_type == "adam":
-        optimizer = tf.optimizers.Adam(learning_rate)
-        print("Using Adam optimizer ... ")
-    elif optimizer_type == "sgd":
-        optimizer = tf.optimizers.SGD(learning_rate, momentum=0.9, nesterov=True)
-        print("Using SGD optimizer ... ")
-    elif optimizer_type == "rmsprop":
-        optimizer = tf.optimizers.RMSprop(learning_rate)
-        print("Using RMSprop optimizer ... ")
-    else:
-        raise Exception(f"Not supported optimizer : {optimizer_type}")
+    mirrored_strategy = tf.distribute.MirroredStrategy()
 
-    if use_mixed_precision:
-        optimizer = tf.keras.mixed_precision.LossScaleOptimizer(optimizer)
-        print("Optimizer is changed to LossScaleOptimizer.")
-
-    if model_type == "resnet_152":
-        model_delegate = dd.model.resnet.create_resnet_152
-    elif model_type == "resnet_custom_v1":
-        model_delegate = dd.model.resnet.create_resnet_custom_v1
-    elif model_type == "resnet_custom_v2":
-        model_delegate = dd.model.resnet.create_resnet_custom_v2
-    elif model_type == "resnet_custom_v3":
-        model_delegate = dd.model.resnet.create_resnet_custom_v3
-    elif model_type == "resnet_custom_v4":
-        model_delegate = dd.model.resnet.create_resnet_custom_v4
-    else:
-        raise Exception(f"Not supported model : {model_type}")
-
-    print("Loading tags ... ")
-    tags = dd.project.load_tags_from_project(project_path)
-    output_dim = len(tags)
-
-    print(f"Creating model ({model_type}) ... ")
-    # tf.keras.backend.set_learning_phase(1)
-
-    if source_model:
-        model = tf.keras.models.load_model(source_model)
-        print(
-            f"Model : {model.input_shape} -> {model.output_shape} (loaded from {source_model})"
-        )
-    else:
-        if use_mixed_precision:
-            policy = tf.keras.mixed_precision.Policy("mixed_float16")
-            tf.keras.mixed_precision.set_global_policy(policy)
-
-        inputs = tf.keras.Input(shape=(height, width, 3), dtype=tf.float32)  # HWC
-        ouputs = model_delegate(inputs, output_dim)
-        model = tf.keras.Model(inputs=inputs, outputs=ouputs, name=model_type)
+    with mirrored_strategy.scope():
+        if optimizer_type == "adam":
+            optimizer = tf.optimizers.Adam(learning_rate)
+            print("Using Adam optimizer ... ")
+        elif optimizer_type == "sgd":
+            optimizer = tf.optimizers.SGD(learning_rate, momentum=0.9, nesterov=True)
+            print("Using SGD optimizer ... ")
+        elif optimizer_type == "rmsprop":
+            optimizer = tf.optimizers.RMSprop(learning_rate)
+            print("Using RMSprop optimizer ... ")
+        else:
+            raise Exception(f"Not supported optimizer : {optimizer_type}")
 
         if use_mixed_precision:
-            policy = tf.keras.mixed_precision.Policy("float32")
-            tf.keras.mixed_precision.set_global_policy(policy)
+            optimizer = tf.keras.mixed_precision.LossScaleOptimizer(optimizer)
+            print("Optimizer is changed to LossScaleOptimizer.")
 
-            inputs_float32 = tf.keras.Input(
-                shape=(height, width, 3), dtype=tf.float32
-            )  # HWC
-            ouputs_float32 = model_delegate(inputs_float32, output_dim)
-            model_float32 = tf.keras.Model(
-                inputs=inputs_float32, outputs=ouputs_float32, name=model_type
+        if model_type == "resnet_152":
+            model_delegate = dd.model.resnet.create_resnet_152
+        elif model_type == "resnet_custom_v1":
+            model_delegate = dd.model.resnet.create_resnet_custom_v1
+        elif model_type == "resnet_custom_v2":
+            model_delegate = dd.model.resnet.create_resnet_custom_v2
+        elif model_type == "resnet_custom_v3":
+            model_delegate = dd.model.resnet.create_resnet_custom_v3
+        elif model_type == "resnet_custom_v4":
+            model_delegate = dd.model.resnet.create_resnet_custom_v4
+        else:
+            raise Exception(f"Not supported model : {model_type}")
+
+        print("Loading tags ... ")
+        tags = dd.project.load_tags_from_project(project_path)
+        output_dim = len(tags)
+
+        print(f"Creating model ({model_type}) ... ")
+        # tf.keras.backend.set_learning_phase(1)
+
+        mirrored_strategy = tf.distribute.MirroredStrategy()
+
+        if source_model:
+            model = tf.keras.models.load_model(source_model)
+            print(
+                f"Model : {model.input_shape} -> {model.output_shape} (loaded from {source_model})"
             )
+        else:
+            if use_mixed_precision:
+                policy = tf.keras.mixed_precision.Policy("mixed_float16")
+                tf.keras.mixed_precision.set_global_policy(policy)
 
-            print("float32 model is created.")
+            inputs = tf.keras.Input(shape=(height, width, 3), dtype=tf.float32)  # HWC
+            ouputs = model_delegate(inputs, output_dim)
+            model = tf.keras.Model(inputs=inputs, outputs=ouputs, name=model_type)
 
-        print(f"Model : {model.input_shape} -> {model.output_shape}")
+            if use_mixed_precision:
+                policy = tf.keras.mixed_precision.Policy("float32")
+                tf.keras.mixed_precision.set_global_policy(policy)
 
-    if loss_type == "binary_crossentropy":
-        loss = loss = tf.keras.losses.BinaryCrossentropy()
-    elif loss_type == "focal_loss":
-        loss = dd.model.losses.focal_loss()
-    else:
-        raise NotSupportedError(f"Loss type '{loss_type}' is not supported.")
-    print(f"Using loss : {loss_type}")
+                inputs_float32 = tf.keras.Input(
+                    shape=(height, width, 3), dtype=tf.float32
+                )  # HWC
+                ouputs_float32 = model_delegate(inputs_float32, output_dim)
+                model_float32 = tf.keras.Model(
+                    inputs=inputs_float32, outputs=ouputs_float32, name=model_type
+                )
 
-    model.compile(
-        optimizer=optimizer,
-        loss=loss,
-        metrics=[tf.keras.metrics.Precision(), tf.keras.metrics.Recall()],
-    )
+                print("float32 model is created.")
+
+            print(f"Model : {model.input_shape} -> {model.output_shape}")
+
+        if loss_type == "binary_crossentropy":
+            loss = loss = tf.keras.losses.BinaryCrossentropy()
+        elif loss_type == "focal_loss":
+            loss = dd.model.losses.focal_loss()
+        else:
+            raise NotSupportedError(f"Loss type '{loss_type}' is not supported.")
+        print(f"Using loss : {loss_type}")
+
+        model.compile(
+            optimizer=optimizer,
+            loss=loss,
+            metrics=[tf.keras.metrics.Precision(), tf.keras.metrics.Recall()],
+        )
 
     print(f"Loading database ... ")
     image_records = dd.data.load_image_records(database_path, minimum_tag_count, load_as_md5, use_dbmem, no_md5_folder, load_as_id, use_one_folder)
@@ -225,29 +230,31 @@ def train_project(project_path, source_model, load_as_md5=False, use_dbmem=False
             image_paths = [image_record[0] for image_record in image_records_slice]
             tag_strings = [image_record[1] for image_record in image_records_slice]
 
-            dataset_wrapper = dd.data.DatasetWrapper(
-                (image_paths, tag_strings),
-                tags,
-                width,
-                height,
-                scale_range=scale_range,
-                rotation_range=rotation_range,
-                shift_range=shift_range,
-            )
-            dataset = dataset_wrapper.get_dataset(minibatch_size)
+            with mirrored_strategy.scope():
+                dataset_wrapper = dd.data.DatasetWrapper(
+                    (image_paths, tag_strings),
+                    tags,
+                    width,
+                    height,
+                    scale_range=scale_range,
+                    rotation_range=rotation_range,
+                    shift_range=shift_range,
+                )
+                dataset = dataset_wrapper.get_dataset(minibatch_size)
 
             for (x_train, y_train) in dataset:
-                sample_count = x_train.shape[0]
+                with mirrored_strategy.scope():
+                    sample_count = x_train.shape[0]
 
-                step_result = model.train_on_batch(
-                    x_train, y_train, reset_metrics=False
-                )
+                    step_result = model.train_on_batch(
+                        x_train, y_train, reset_metrics=False
+                    )
 
-                used_minibatch.assign_add(1)
-                used_sample.assign_add(sample_count)
-                used_sample_sum += sample_count
-                loss_sum += step_result[0]
-                loss_count += 1
+                    used_minibatch.assign_add(1)
+                    used_sample.assign_add(sample_count)
+                    used_sample_sum += sample_count
+                    loss_sum += step_result[0]
+                    loss_count += 1
 
                 if int(used_minibatch) % console_logging_frequency_mb == 0:
                     # calculate logging informations
