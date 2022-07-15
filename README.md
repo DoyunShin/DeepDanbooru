@@ -1,8 +1,9 @@
 # DeepDanbooru
-[![Python](https://img.shields.io/badge/python-3.6-green)](https://www.python.org/doc/versions/)
+[![Python](https://img.shields.io/badge/python-3.7-green)](https://www.python.org/doc/versions/)
 [![GitHub](https://img.shields.io/github/license/KichangKim/DeepDanbooru)](https://opensource.org/licenses/MIT)
-[![Web](https://img.shields.io/badge/web%20demo-20200915-brightgreen)](http://kanotype.iptime.org:8003/deepdanbooru/)
+[![Web](https://img.shields.io/badge/web%20demo-20200915-brightgreen)](https://deep.doyun.me/)
 
+Web demo: [here](https://deep.doyun.me/)
 
 ## Requirements
 DeepDanbooru is written by Python 3.7. Following packages are need to be installed.
